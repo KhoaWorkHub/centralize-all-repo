@@ -1,35 +1,37 @@
-# Multi-stage build for React application
-FROM node:18-alpine AS build
+# Railway Backend Deployment - Spring Boot
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy backend pom.xml for better Docker layer caching
+COPY backend/pom.xml .
 
-# Install dependencies
-RUN npm ci
+# Download dependencies
+RUN mvn dependency:go-offline -B
 
-# Copy source code
-COPY . .
+# Copy backend source code
+COPY backend/src ./src
 
 # Build the application
-RUN npm run build
+RUN mvn clean package -DskipTests
 
-# Production stage with nginx
-FROM nginx:alpine
+# Use Java 21 runtime for running the application
+FROM eclipse-temurin:21-jre-jammy
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+WORKDIR /app
 
-# Copy built application from build stage
-COPY --from=build /app/build /usr/share/nginx/html
+# Install curl for health checks
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 
-# Expose port
-EXPOSE 3000
+# Copy the built JAR from the build stage
+COPY --from=build /app/target/*.jar app.jar
+
+# Expose the port (Railway uses PORT environment variable)
+EXPOSE $PORT
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-  CMD curl -f http://localhost:3000 || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:${PORT:-8080}/api/repos/stats || exit 1
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Run the application with Railway's PORT variable
+CMD ["java", "-Dserver.port=${PORT:-8080}", "-jar", "app.jar"]
