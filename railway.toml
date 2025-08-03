@@ -1,0 +1,14 @@
+[build]
+builder = "dockerfile"
+dockerfilePath = "Dockerfile"
+
+[deploy]
+startCommand = "java -jar app.jar"
+healthcheckPath = "/api/repos/stats"
+healthcheckTimeout = 300
+restartPolicyType = "always"
+
+[variables]
+NODE_ENV = "production"
+SPRING_PROFILES_ACTIVE = "production"
+PORT = "8080"

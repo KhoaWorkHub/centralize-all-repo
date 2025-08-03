@@ -91,9 +91,10 @@ railway variables set SPRING_PROFILES_ACTIVE=production
 
 # Deploy
 echo -e "${BLUE}🚀 Deploying your application...${NC}"
-echo -e "${YELLOW}This will take 3-5 minutes...${NC}"
+echo -e "${YELLOW}This will take 5-8 minutes (building Docker image)...${NC}"
 echo ""
 
+# Use Dockerfile deployment
 if railway up --detach; then
     echo ""
     echo -e "${GREEN}🎉 DEPLOYMENT SUCCESSFUL!${NC}"

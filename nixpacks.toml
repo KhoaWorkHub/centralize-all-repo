@@ -1,0 +1,9 @@
+[phases.build]
+dependsOn = ["setup"]
+cmds = ["echo 'Using custom Dockerfile for build'"]
+
+[phases.setup]
+nixPkgs = ["curl"]
+
+[start]
+cmd = "java -jar app.jar"
