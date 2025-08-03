@@ -1,32 +1,35 @@
-# Simplified Railway deployment - Backend only first
-FROM maven:3.9.6-eclipse-temurin-21 AS build
+# Multi-stage build for React application
+FROM node:18-alpine AS build
 
 WORKDIR /app
 
-# Copy backend files
-COPY backend/pom.xml .
-RUN mvn dependency:go-offline -B
+# Copy package files
+COPY package*.json ./
 
-COPY backend/src ./src
-RUN mvn clean package -DskipTests
+# Install dependencies
+RUN npm ci
 
-# Runtime stage
-FROM eclipse-temurin:21-jre-jammy
+# Copy source code
+COPY . .
 
-WORKDIR /app
+# Build the application
+RUN npm run build
 
-# Install curl for health checks
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+# Production stage with nginx
+FROM nginx:alpine
 
-# Copy the built jar
-COPY --from=build /app/target/*.jar app.jar
+# Copy custom nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy built application from build stage
+COPY --from=build /app/build /usr/share/nginx/html
 
 # Expose port
-EXPOSE $PORT
+EXPOSE 3000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:${PORT:-8080}/api/repos/stats || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD curl -f http://localhost:3000 || exit 1
 
-# Start command
-CMD ["java", "-Dserver.port=${PORT:-8080}", "-jar", "app.jar"]
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

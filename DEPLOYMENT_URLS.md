@@ -1,7 +1,7 @@
 # 🌐 Deployment URLs
 
 ## Live Application
-- **Frontend (Vercel)**: https://github-repo-dashboard-imvzch7v9-khoaworkhubs-projects.vercel.app
+- **Frontend (Vercel)**: https://centralize-all-repo-2mysxa5os-khoaworkhubs-projects.vercel.app
 - **Backend (Railway)**: https://centralize-all-repo-production.up.railway.app
 
 ## API Endpoints
