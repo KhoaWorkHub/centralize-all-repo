@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Repository, RepositoryStats } from '../types';
 
-const API_BASE_URL = process.env.NODE_ENV === 'production' ? '/api' : 'http://localhost:8080/api';
+const API_BASE_URL = process.env.REACT_APP_API_URL 
+  ? `${process.env.REACT_APP_API_URL}/api`
+  : process.env.NODE_ENV === 'production' 
+    ? '/api' 
+    : 'http://localhost:8080/api';
 
 export const useRepositories = () => {
   const [repositories, setRepositories] = useState<Repository[]>([]);
