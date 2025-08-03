@@ -1,0 +1,47 @@
+config:
+  target: "{{ $processEnvironment.STAGING_URL || 'http://localhost:8080' }}"
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 20
+      name: "Ramp up"
+    - duration: 300
+      arrivalRate: 50
+      name: "Sustained load"
+  defaults:
+    headers:
+      Accept: "application/json"
+      User-Agent: "Artillery Load Test"
+
+scenarios:
+  - name: "Repository Dashboard Load Test"
+    weight: 100
+    flow:
+      - get:
+          url: "/api/repos/stats"
+          capture:
+            - json: "$.totalRepositories"
+              as: "totalRepos"
+      - get:
+          url: "/api/repos"
+          expect:
+            - statusCode: 200
+            - contentType: json
+      - get:
+          url: "/api/repos/languages"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/repos/search"
+          qs:
+            q: "{{ $randomString() }}"
+          expect:
+            - statusCode: 200
+      - get:
+          url: "/api/repos/filter"
+          qs:
+            language: "{{ $pick(['JavaScript', 'TypeScript', 'Java', 'Python']) }}"
+          expect:
+            - statusCode: 200
