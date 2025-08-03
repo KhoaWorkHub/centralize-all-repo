@@ -1,6 +1,5 @@
 {
   "version": 2,
-  "name": "github-repo-dashboard",
   "builds": [
     {
       "src": "frontend/package.json",
@@ -10,35 +9,18 @@
       }
     }
   ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/frontend/$1"
+  "env": {
+    "REACT_APP_API_URL": "https://centralize-all-repo-production.up.railway.app"
+  },
+  "build": {
+    "env": {
+      "REACT_APP_API_URL": "https://centralize-all-repo-production.up.railway.app"
     }
-  ],
+  },
   "rewrites": [
     {
       "source": "/(.*)",
       "destination": "/index.html"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "X-Requested-With, Content-Type, Authorization"
-        }
-      ]
     }
   ]
 }
