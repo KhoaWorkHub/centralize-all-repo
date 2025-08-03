@@ -14,7 +14,7 @@ public class WebConfig implements WebMvcConfigurer {
                     "http://localhost:3000",
                     "https://centralize-all-repo.vercel.app",
                     "https://centralize-all-repo-2mysxa5os-khoaworkhubs-projects.vercel.app",
-                    "https://*.vercel.app"
+                    "https://centralize-all-repo-eji169jse-khoaworkhubs-projects.vercel.app"
                 )
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
                 .allowedHeaders("*")
